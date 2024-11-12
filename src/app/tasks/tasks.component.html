@@ -1,1 +1,22 @@
-<p>{{ userName }}</p>
+<section id="tasks">
+    <header>
+        <h2>{{ userName }}'s Tasks</h2>
+        <menu>
+            <button (click)="onAddTask()">Add Task</button>
+        </menu>
+    </header>
+    <ul>
+        @if (taskInEditMode()) {
+            <li>
+                <app-task-form [taskToEdit]="taskInEditMode" (cancel)="onAddCancel()" (save)="onAddSave($event)" />
+            </li>
+        }
+        @for (task of tasksOfSelectedUser; track task.id) {
+            <li>
+                <app-task [task]="task" (complete)="onCompleteTask($event)" />
+            </li> 
+        }
+    </ul>
+</section>
+
+
