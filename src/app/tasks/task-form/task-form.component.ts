@@ -1,23 +1,33 @@
-import { Component, EventEmitter, Input, Output, Signal } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, Signal } from '@angular/core';
 import { ITask } from '../task/task.model';
+import { FormsModule } from '@angular/forms';
+import { TasksService } from '../tasks.service';
 
 @Component({
   selector: 'app-task-form',
   standalone: true,
-  imports: [],
+  imports: [FormsModule], // automatically prevents form submission to server
   templateUrl: './task-form.component.html',
   styleUrl: './task-form.component.css',
 })
 export class TaskFormComponent {
-  @Input({ required: true }) taskToEdit!: Signal<ITask | undefined>;
-  @Output() save = new EventEmitter<Signal<ITask | undefined>>();
-  @Output() cancel = new EventEmitter();
+  @Input({ required: true }) userId!: string;
+  @Output() close = new EventEmitter<void>();
+  enteredTitle = '';
+  enteredSummary = '';
+  enteredDate = '';
+  private tasksService = inject(TasksService);
 
-  onSave() {
-    this.save.emit(this.taskToEdit);
+  onSubmit() {
+    this.tasksService.addTask({
+      title: this.enteredTitle,
+      summary: this.enteredSummary,
+      date: this.enteredDate
+    }, this.userId);
+    this.close.emit();
   }
 
   onCancel() {
-    this.cancel.emit();
+    this.close.emit();
   }
 }
